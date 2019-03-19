@@ -4,6 +4,16 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+/**
+ *  require 메서드 사용시 모듈의 경로를 적는다.
+ *  이때 해당 경로에 파일이 존재하지 않을경우 파라미터로 들어온 경로를 디렉터리로 인식하고
+ *  그 디렉터리 하위의 index.js를 가져온다.
+ *
+ *  ex ) 현재 폴더구조에서 (./routes/index.js)
+ *  var indexRouter = require('./routes/index'); 이 구문은
+ *  var indexRouter = require('./routes/'); 와 동일하게 동작한다.
+ */
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
