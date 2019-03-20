@@ -1,10 +1,15 @@
+//HTTP 에러 모듈
 var createError = require('http-errors');
 //express 서버 세팅
 var express = require('express');
 
 //path모듈 -> 현재 파일 위치나 각종 path관련 함수모듈
 var path = require('path');
+
+//쿠키사용 모듈
 var cookieParser = require('cookie-parser');
+
+//logger 모듈
 var logger = require('morgan');
 
 /**
@@ -22,7 +27,7 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
-// view engine setup
+// 뷰 엔진 설정
 //_dirname은 현재 파일(app.js)의 위치를 의미. 뷰 폴더를 views로 세팅한다.
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -36,12 +41,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-// catch 404 and forward to error handler
+// 404에러 핸들러
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
+// 에러 핸들러
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
