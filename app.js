@@ -1,5 +1,8 @@
 var createError = require('http-errors');
+//express 서버 세팅
 var express = require('express');
+
+//path모듈
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
