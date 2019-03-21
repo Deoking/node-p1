@@ -1,5 +1,21 @@
 extends layout
 
 block content
+  script.
+    $(document).ready(function () {
+      $('button').on('click', function () {
+        var id = $(this).attr('id');
+        var url = id == 'administrator' ? '/admin' : '/users'
+        location.href=url;
+      });
+    });
   h1= title
-  p Welcome to #{title}
+  pre
+    | Welcome to the Node chat server.
+    | Log in as an administrator or anonymous user.
+  .login-input
+    button#administrator(value='administrator') Administrator
+    |  
+    button#anonymous(value='anonymous') Anonymous
+
+
