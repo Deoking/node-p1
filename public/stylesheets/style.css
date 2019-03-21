@@ -6,3 +6,16 @@ body {
 a {
   color: #00B7FF;
 }
+
+.connect-users{
+  height : 50px;
+  width : 500px;
+  overflow-y: scroll;
+  background-color: #ccc;
+}
+.display-none{
+  display: none;
+}
+.connect-users-item{
+  cursor: pointer;
+}

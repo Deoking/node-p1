@@ -1,34 +1,47 @@
 extends layout
 
 block content
-  script.
-    $(document).ready(function (){
-      var socket = io();
+    script.
+        $(document).ready(function (){
+            var socket = io();
 
-      //id 입력
-      $('#apply').on('click', function () {
+            //id 입력
+            $('#apply').on('click', function () {
 
-        var inputName = $('#username').val();
+                var inputName = $('#username').val();
 
-        if(inputName){
-          socket.emit('login', {
-            name: inputName,
-            role: 'administrator'
-          });
-        }else{
-          alert('Please enter your account.');
-          return false;
-        }
-      });
+                if(inputName){
+                    socket.emit('login', {
+                        name: inputName,
+                        role: 'administrator'
+                    });
+                    $('#connectUser').removeClass('display-none');
+                }else{
+                    alert('Please enter your account.');
+                    return false;
+                }
+            });
 
-      //사용자접속
-      socket.on('notifyLoginToAdmin',function (data) {
-        console.log(data);
-      });
+            //사용자접속
+            socket.on('notifyLoginToAdmin',function (data) {
+                var p = $('<p></p>');
 
-    });
-  h1= title
-  .idform
-    p Please enter your account.
-    input#username(type='text')
-    button#apply submit
+                p.attr('id', data.socketId);
+                p.addClass('connect-users-item');
+                p.html(data.name);
+                
+                p.on('click', function () {
+                    console.log($(this).attr('id'));
+                });
+                
+                $('#connectUser').append(p);
+            });
+
+        });
+    h1= title
+    .idform
+        p Please enter your account.
+        input#username(type='text')
+        button#apply submit
+        p Connect user List
+        .connect-users.display-none#connectUser

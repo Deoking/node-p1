@@ -1,0 +1,28 @@
+extends layout
+
+block content
+    script.
+        $(document).ready(function (){
+            var socket = io();
+
+            //id 입력
+            $('#apply').on('click', function () {
+
+                var inputName = $('#username').val();
+
+                if(inputName){
+                    socket.emit('login', {
+                        name: inputName,
+                        role: 'anonymous'
+                    });
+                }else{
+                    alert('Please enter your account.');
+                    return false;
+                }
+            });
+        });
+    h1= title
+    .idform
+        p Please enter your account.
+        input#username(type='text')
+        button#apply submit
