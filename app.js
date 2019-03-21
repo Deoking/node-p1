@@ -21,8 +21,8 @@ var logger = require('morgan');
  *  var indexRouter = require('./routes/index'); 이 구문은
  *  var indexRouter = require('./routes/'); 와 동일하게 동작한다.
  */
-
 var indexRouter = require('./routes/index');
+var adminRouter = require('./routes/admin');
 var usersRouter = require('./routes/users');
 
 var app = express();
@@ -38,8 +38,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//URL 매핑
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/admin', adminRouter);
 
 // 404에러 핸들러
 app.use(function(req, res, next) {
