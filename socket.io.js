@@ -31,7 +31,7 @@ io.on('connection', function (socket) {
      * transport close	            -   Client Side	Client stopped sending data
     */
     socket.on('disconnect', function (cause) {
-        debug('user disconnect. cause : ' + cause);
+        debug('user disconnect. ID : '+ socket.conn.id +' cause : ' + cause);
     })
 });
 
