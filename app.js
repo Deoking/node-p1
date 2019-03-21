@@ -30,6 +30,8 @@ var app = express();
 // 뷰 엔진 설정
 //_dirname은 현재 파일(app.js)의 위치를 의미. 뷰 폴더를 views로 세팅한다.
 app.set('views', path.join(__dirname, 'views'));
+
+//view 엔진은 pug로 설정. (pug 문법 매우 간결하고 쉽다!!!!)
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));

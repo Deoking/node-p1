@@ -2,5 +2,33 @@ extends layout
 
 block content
   script.
-    const socket = io();
+    $(document).ready(function (){
+      var socket = io();
+
+      //id 입력
+      $('#apply').on('click', function () {
+
+        var inputName = $('#username').val();
+
+        if(inputName){
+          socket.emit('login', {
+            name: inputName,
+            role: 'administrator'
+          });
+        }else{
+          alert('Please enter your account.');
+          return false;
+        }
+      });
+
+      //사용자접속
+      socket.on('notifyLoginToAdmin',function (data) {
+        console.log(data);
+      });
+
+    });
   h1= title
+  .idform
+    p Please enter your account.
+    input#username(type='text')
+    button#apply submit

@@ -7,22 +7,52 @@ var io = require('socket.io')(http);
 //debug 모듈
 var debug = require('debug')('node:socket.io');
 
-//접속유저 socket ID 저장
-var login = {};
+//관리자 저장용.
+var admin={};
 
 /**
  * socket IO 이벤트 설정
  */
+//유저가 접속했을때
 io.on('connection', function (socket) {
+
+    /********************
+     *** 공통이벤트 정의 **
+     ********************/
     debug('a user connected');
-    debug('socket ID : ' + socket.conn.id);
+    debug('connected socket ID : ' + socket.conn.id);
+    
+    //로그인이벤트
+    socket.on('login', function (data) {
+        debug('User Login. logged in user data : ');
+        debug(data);
 
-    socket.on('chat message',function (msg) {
-        io.emit('chat message', msg);
+        var socketId = socket.conn.id;
+        var name = data.name;
+        var role = data.role;
+        
+        //로그인한 사용자의 데이터를 소켓에 저장
+        socket.name = name;
+        socket.role = role;
+
+        //관리자일 경우 관리자 오브젝트에 정보 저장.
+        if('administrator' == role){
+            admin.name = name;
+            admin.role = role;
+            admin.socketId = socketId;
+            debug('save admin data : ');
+            debug(admin);
+        }else{
+            //관리자가 아닐경우
+            //접속자의 socketId를 세팅
+            data.socketId = socketId;
+            //관리자에게 접속정보 전달
+            io.to(admin.socketId).emit('notifyLoginToAdmin', data);
+        }
     });
-
+    
     /**
-     * disconnection cause>>
+     * disconnection 발생 이유(cause)들
      *
      * transport error              -	Server Side	Transport error
      * server namespace disconnect	-   Server Side	Server performs a socket.disconnect()
@@ -33,6 +63,24 @@ io.on('connection', function (socket) {
     socket.on('disconnect', function (cause) {
         debug('user disconnect. ID : '+ socket.conn.id +' cause : ' + cause);
     })
+
+    /*********************
+     ** 관리자이벤트 정의 **
+     ********************/
+
+    //관리자 -> 사용자(단일) 메시지
+    socket.on('messageToUser', function (data) {
+
+    });
+
+    //관리자 -> 사용자(전체) 메시지
+    socket.on('messageToUsers', function (data) {
+
+    });
+
+    /*********************
+     ** 사용자이벤트 정의 **
+     ********************/
 });
 
 module.exports = io;
