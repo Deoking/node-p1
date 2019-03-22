@@ -23,14 +23,14 @@ block content
 
             //사용자접속 알림 이벤트
             socket.on('notifyClientLoginToAdmin', function (data) {
-                addClientToList(data);
+                addClientToList(data, socket);
                 updateConnectedClientCount();
             });
 
             //접속중인 사용자 리스트 알림 이벤트
             socket.on('notifyClientLoginListToAdmin', function (data) {
                 for(var i=0; i<data.length; i++){
-                    addClientToList(data[i]);
+                    addClientToList(data[i], socket);
                 }
                 updateConnectedClientCount();
             });
@@ -41,6 +41,30 @@ block content
                 $('#'+data).remove();
                 updateConnectedClientCount();
             });
+
+            var chatDialog = $('#chatDialog');
+
+            //채팅 전송 버튼 이벤트
+            chatDialog.find('#sendBtn').on('click', function () {
+                socket.emit('sendMessageToUser', {
+                    client: $('#clientId').val(),
+                    msg: $('#chatInput').val()
+                },function (msg) {
+                    var chatItem = $('<div></div>'),
+                        myMessage = $('<div></div>'),
+                        chatArea = $('#chatArea');
+
+                    chatItem.addClass('chat-item');
+                    myMessage.addClass('my-message');
+                    myMessage.html(msg);
+                    chatItem.append(myMessage);
+                    chatArea.append(chatItem);
+
+                    chatArea.animate({
+                        scrollTop : chatArea.scrollTop() + chatArea.height()
+                    });
+                });
+            })
 
         });
 
@@ -58,9 +82,21 @@ block content
 
             //해당 클라이언트와의 대화창 정의
             p.on('click', function () {
-                console.log($(this).attr('id'));
-                $('#chatDialog').dialog({ autoOpen: false, modal: true, height: 400, width: 500, title : 'Talk with " '+$(this).html() + ' "' });
-                $('#chatDialog').dialog('open');
+
+                var chatDialog = $('#chatDialog'),
+                    chatArea = $('#chatArea');
+
+                chatDialog.find('#clientId').val($(this).attr('id'));
+                chatDialog.dialog({ autoOpen: false, modal: true, height: 400, width: 500, title : 'Talk with " '+$(this).html() + ' "' });
+                chatDialog.dialog('open');
+
+                //기존 대화 지우기
+                chatArea.empty();
+                chatArea.animate({
+                    scrollTop: chatArea.scrollTop() + chatArea.height()
+                });
+
+                $('#chatInput').val('');
             });
 
             //이미 접속된 클라이언트인지 확인
@@ -97,7 +133,8 @@ block content
             p Click client in the list below to send a message.
             .connect-clients.border-radius10#connectClientList
         #chatDialog.display-none
-            #chatArea.chat-area
-            input.chat-input(type='text')
-            button.chat-send send
+            #chatArea.chat-area.border-radius10
+            input#chatInput.chat-input(type='text')
+            input#clientId(type='hidden')
+            button#sendBtn.chat-send send
 

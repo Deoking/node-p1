@@ -30,9 +30,40 @@ block content
             socket.on('notifyAdministratorLogout', function (data) {
                 console.log('notifyAdministratorLogout');
             });
+
+            //관리자로부터 메시지 수신
+            socket.on('recieveMessageFromAdministrator', function (data) {
+                console.log(data);
+
+                var chatDialog = $('#chatDialog'),
+                    chatArea = $('#chatArea');
+
+                chatDialog.find('#clientId').val(data.clientId);
+                chatDialog.dialog({
+                    autoOpen: false,
+                    modal: true,
+                    height: 400,
+                    width: 500,
+                    title: 'Talk with " ' + $(this).html() + ' "'
+                });
+                chatDialog.dialog('open');
+
+                //기존 대화 지우기
+                chatArea.empty();
+                chatArea.animate({
+                    scrollTop: chatArea.scrollTop() + chatArea.height()
+                });
+
+                $('#chatInput').val('');
+            });
         });
     h1= title
     .idform
         p Please enter your account.
         input#clientName(type='text')
         button#apply submit
+        #chatDialog.display-none
+            #chatArea.chat-area.border-radius10
+            input#chatInput.chat-input(type='text')
+            input#clientId(type='hidden')
+            button#sendBtn.chat-send send

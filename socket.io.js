@@ -89,8 +89,11 @@ io.on('connection', function (socket) {
      ********************/
 
     //관리자 -> 사용자(단일) 메시지
-    socket.on('messageToUser', function (data) {
-
+    socket.on('sendMessageToUser', function (data, fn) {
+        var target = data.client;
+        data.clientId = admin.socketId;
+        io.to(target).emit('recieveMessageFromAdministrator', data);
+        fn(data.msg);
     });
 
     //관리자 -> 사용자(전체) 메시지
