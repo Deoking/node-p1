@@ -7,7 +7,7 @@ block content
             //id 입력
             $('#apply').on('click', function () {
 
-                var inputName = $('#username').val();
+                var inputName = $('#clientName').val();
 
                 if (inputName) {
                     socket.emit('login', {
@@ -21,42 +21,72 @@ block content
                 }
             });
 
-            //사용자접속
-            socket.on('notifyUserLoginToAdmin', function (data) {
-                console.log('notifyUserLoginToAdmin');
-                addUserToList(data);
+            //사용자접속 알림 이벤트
+            socket.on('notifyClientLoginToAdmin', function (data) {
+                addClientToList(data);
+                updateConnectedClientCount();
             });
 
-            //접속중인 사용자 가져오기
-            socket.on('notifyUserLoginListToAdmin', function (data) {
+            //접속중인 사용자 리스트 알림 이벤트
+            socket.on('notifyClientLoginListToAdmin', function (data) {
                 for(var i=0; i<data.length; i++){
-                    addUserToList(data[i]);
+                    addClientToList(data[i]);
                 }
+                updateConnectedClientCount();
+            });
+
+            //접속해제 클라이언트 알림 이벤트
+            socket.on('notifyClientLogoutToAdmin', function (data) {
+                console.log('notifyClientLogoutToAdmin :' + data);
+                $('#'+data).remove();
+                updateConnectedClientCount();
             });
 
         });
 
-        //사용자를 접속사용자 리스트에 추가
-        function addUserToList(data) {
-            console.log(data);
+        //클라이언트를 접속리스트에 추가
+        function addClientToList(data) {
+
+            var connectClientListDiv = $('#connectClientList');
+            var listedClient;
             var p = $('<p></p>');
 
             p.attr('id', data.socketId);
-            p.addClass('connect-users-item');
+            p.addClass('connect-clients-item');
+            p.addClass('border-radius10');
             p.html(data.name);
 
             p.on('click', function () {
                 console.log($(this).attr('id'));
             });
 
-            $('#connectUserList').append(p);
+            listedClient = connectClientListDiv.find('#'+data.socketId);
+
+            if(listedClient.length == 0){
+                connectClientListDiv.append(p);
+            }else{
+                listedClient.html(p.html());
+            }
+
+        }
+
+        //현재 접속자수 계산
+        function updateConnectedClientCount(){
+            var connectClientListDiv = $('#connectClientList');
+            var ConnectedClientCount =  connectClientListDiv.find('p').length;
+            $('#connectedCount').html(ConnectedClientCount);
+
         }
 
     h1= title
     .idform
         p Please enter your account.
-        input#username(type='text')
+        input#clientName(type='text')
         button#apply submit
         .display-none#connectUser
-            p Connect user List
-            .connect-users#connectUserList
+            p Connect client List
+                | (  Connected :
+                span#connectedCount 0
+                |  )
+            p Click client in the list below to send a message.
+            .connect-clients.border-radius10#connectClientList
