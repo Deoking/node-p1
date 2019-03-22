@@ -40,6 +40,9 @@ io.on('connection', function (socket) {
             admin.name = name;
             admin.role = role;
             admin.socketId = socketId;
+
+            io.to(admin.socketId).emit('notifyUserLoginListToAdmin', getConnectedUserList());
+
             debug('save admin data : ');
             debug(admin);
         }else{
@@ -47,7 +50,7 @@ io.on('connection', function (socket) {
             //접속자의 socketId를 세팅
             data.socketId = socketId;
             //관리자에게 접속정보 전달
-            io.to(admin.socketId).emit('notifyLoginToAdmin', data);
+            io.to(admin.socketId).emit('notifyUserLoginToAdmin', data);
         }
     });
     
@@ -82,5 +85,41 @@ io.on('connection', function (socket) {
      ** 사용자이벤트 정의 **
      ********************/
 });
+
+function getConnectedUserList (roomId, namespace){
+    var res = []
+        // 네임스페이스 기본값 = '/'
+        , ns = io.of(namespace || '/');
+
+    if (ns) {
+        console.log(ns.connected);
+        for(var id in ns.connected){
+
+            var socket = ns.connected[id];
+
+            if(roomId) {
+                var index = socket.rooms.indexOf(roomId);
+                if(index !== -1) {
+                    if(socket.name && socket.role && socket.role != 'administrator'){
+                        var data = {};
+                        data.name = socket.name;
+                        data.role = socket.role;
+                        data.socketId = socket.id;
+                        res.push(data);
+                    }
+                }
+            } else {
+                if(socket.name && socket.role && socket.role != 'administrator' ){
+                    var data = {};
+                    data.name = socket.name;
+                    data.role = socket.role;
+                    data.socketId = socket.id;
+                    res.push(data);
+                }
+            }
+        }
+    }
+    return res;
+}
 
 module.exports = io;

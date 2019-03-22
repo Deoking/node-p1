@@ -2,45 +2,61 @@ extends layout
 
 block content
     script.
-        $(document).ready(function (){
+        $(document).ready(function () {
             var socket = io();
             //id 입력
             $('#apply').on('click', function () {
 
                 var inputName = $('#username').val();
 
-                if(inputName){
+                if (inputName) {
                     socket.emit('login', {
                         name: inputName,
                         role: 'administrator'
                     });
                     $('#connectUser').removeClass('display-none');
-                }else{
+                } else {
                     alert('Please enter your account.');
                     return false;
                 }
             });
 
             //사용자접속
-            socket.on('notifyLoginToAdmin',function (data) {
-                var p = $('<p></p>');
+            socket.on('notifyUserLoginToAdmin', function (data) {
+                console.log('notifyUserLoginToAdmin');
+                addUserToList(data);
+            });
 
-                p.attr('id', data.socketId);
-                p.addClass('connect-users-item');
-                p.html(data.name);
-                
-                p.on('click', function () {
-                    console.log($(this).attr('id'));
-                });
-                
-                $('#connectUser').append(p);
+            //접속중인 사용자 가져오기
+            socket.on('notifyUserLoginListToAdmin', function (data) {
+                for(var i=0; i<data.length; i++){
+                    addUserToList(data[i]);
+                }
             });
 
         });
+
+        //사용자를 접속사용자 리스트에 추가
+        function addUserToList(data) {
+            console.log(data);
+            var p = $('<p></p>');
+
+            p.attr('id', data.socketId);
+            p.addClass('connect-users-item');
+            p.html(data.name);
+
+            p.on('click', function () {
+                console.log($(this).attr('id'));
+            });
+
+            $('#connectUserList').append(p);
+        }
+
     h1= title
     .idform
         p Please enter your account.
         input#username(type='text')
         button#apply submit
-        p Connect user List
-        .connect-users.display-none#connectUser
+        .display-none#connectUser
+            p Connect user List
+            .connect-users#connectUserList
