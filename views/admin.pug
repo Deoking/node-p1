@@ -21,6 +21,7 @@ block content
                 }
             });
 
+
             //사용자접속 알림 이벤트
             socket.on('notifyClientLoginToAdmin', function (data) {
                 addClientToList(data, socket);
@@ -29,7 +30,7 @@ block content
 
             //접속중인 사용자 리스트 알림 이벤트
             socket.on('notifyClientLoginListToAdmin', function (data) {
-                for(var i=0; i<data.length; i++){
+                for (var i = 0; i < data.length; i++) {
                     addClientToList(data[i], socket);
                 }
                 updateConnectedClientCount();
@@ -37,7 +38,7 @@ block content
 
             //접속해제 클라이언트 알림 이벤트
             socket.on('notifyClientLogoutToAdmin', function (data) {
-                $('#'+data).remove();
+                $('#' + data).remove();
                 updateConnectedClientCount();
             });
 
@@ -56,7 +57,7 @@ block content
                 socket.emit('sendMessageToClient', {
                     client: $('#clientId').val(),
                     msg: $('#chatInput').val()
-                },function (msg) {
+                }, function (msg) {
                     createMessage(true, msg);
                 });
             })
@@ -81,12 +82,12 @@ block content
             });
 
             //이미 접속된 클라이언트인지 확인
-            listedClient = connectClientListDiv.find('#'+data.socketId);
+            listedClient = connectClientListDiv.find('#' + data.socketId);
 
             //접속되지않은 클라이언트면 리스트에 추가
-            if(listedClient.length == 0){
+            if (listedClient.length == 0) {
                 connectClientListDiv.append(p);
-            }else{
+            } else {
                 //이미 접속해있는 클라이언트면 이름만 업데이트
                 listedClient.html(p.html());
             }
@@ -94,9 +95,9 @@ block content
         }
 
         //현재 접속자수 계산
-        function updateConnectedClientCount(){
+        function updateConnectedClientCount() {
             var connectClientListDiv = $('#connectClientList');
-            var ConnectedClientCount =  connectClientListDiv.find('p').length;
+            var ConnectedClientCount = connectClientListDiv.find('p').length;
             $('#connectedCount').html(ConnectedClientCount);
 
         }
