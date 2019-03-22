@@ -37,32 +37,27 @@ block content
 
             //접속해제 클라이언트 알림 이벤트
             socket.on('notifyClientLogoutToAdmin', function (data) {
-                console.log('notifyClientLogoutToAdmin :' + data);
                 $('#'+data).remove();
                 updateConnectedClientCount();
+            });
+
+            //채팅창 오픈 이벤트
+            openChatDialog(socket);
+
+            //클라이언트로부터 메시지 수신
+            socket.on('recieveMessageFromClient', function (data) {
+                createMessage(false, data.msg);
             });
 
             var chatDialog = $('#chatDialog');
 
             //채팅 전송 버튼 이벤트
             chatDialog.find('#sendBtn').on('click', function () {
-                socket.emit('sendMessageToUser', {
+                socket.emit('sendMessageToClient', {
                     client: $('#clientId').val(),
                     msg: $('#chatInput').val()
                 },function (msg) {
-                    var chatItem = $('<div></div>'),
-                        myMessage = $('<div></div>'),
-                        chatArea = $('#chatArea');
-
-                    chatItem.addClass('chat-item');
-                    myMessage.addClass('my-message');
-                    myMessage.html(msg);
-                    chatItem.append(myMessage);
-                    chatArea.append(chatItem);
-
-                    chatArea.animate({
-                        scrollTop : chatArea.scrollTop() + chatArea.height()
-                    });
+                    createMessage(true, msg);
                 });
             })
 
@@ -82,21 +77,7 @@ block content
 
             //해당 클라이언트와의 대화창 정의
             p.on('click', function () {
-
-                var chatDialog = $('#chatDialog'),
-                    chatArea = $('#chatArea');
-
-                chatDialog.find('#clientId').val($(this).attr('id'));
-                chatDialog.dialog({ autoOpen: false, modal: true, height: 400, width: 500, title : 'Talk with " '+$(this).html() + ' "' });
-                chatDialog.dialog('open');
-
-                //기존 대화 지우기
-                chatArea.empty();
-                chatArea.animate({
-                    scrollTop: chatArea.scrollTop() + chatArea.height()
-                });
-
-                $('#chatInput').val('');
+                createChatDialog($(this).attr('id'));
             });
 
             //이미 접속된 클라이언트인지 확인

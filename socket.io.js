@@ -88,11 +88,22 @@ io.on('connection', function (socket) {
      ** 관리자이벤트 정의 **
      ********************/
 
-    //관리자 -> 사용자(단일) 메시지
-    socket.on('sendMessageToUser', function (data, fn) {
+    //사용자 -> 사용자(단일) 메시지
+    socket.on('sendMessageToClient', function (data, fn) {
         var target = data.client;
-        data.clientId = admin.socketId;
-        io.to(target).emit('recieveMessageFromAdministrator', data);
+
+        data.client = socket.id;
+        data.name = socket.name;
+        data.sender = socket.id;
+        data.recieve = target;
+        //타겟 클라이언트의 채팅창 오픈 이벤트부터 실행
+
+        console.log(data);
+
+        io.to(target).emit('openChatDialog', data);
+        
+        //메시지 전송 이벤트 실행
+        io.to(target).emit('recieveMessageFromClient', data);
         fn(data.msg);
     });
 

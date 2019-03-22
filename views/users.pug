@@ -23,39 +23,31 @@ block content
 
             //관리자 로그인 이벤트
             socket.on('notifyAdministratorLogin', function (data) {
-                console.log('notifyAdministratorLogin');
             });
 
             //관리자 로그아웃 이벤트
             socket.on('notifyAdministratorLogout', function (data) {
-                console.log('notifyAdministratorLogout');
             });
 
-            //관리자로부터 메시지 수신
-            socket.on('recieveMessageFromAdministrator', function (data) {
-                console.log(data);
+            //채팅창 오픈 이벤트
+            openChatDialog(socket);
 
-                var chatDialog = $('#chatDialog'),
-                    chatArea = $('#chatArea');
-
-                chatDialog.find('#clientId').val(data.clientId);
-                chatDialog.dialog({
-                    autoOpen: false,
-                    modal: true,
-                    height: 400,
-                    width: 500,
-                    title: 'Talk with " ' + $(this).html() + ' "'
-                });
-                chatDialog.dialog('open');
-
-                //기존 대화 지우기
-                chatArea.empty();
-                chatArea.animate({
-                    scrollTop: chatArea.scrollTop() + chatArea.height()
-                });
-
-                $('#chatInput').val('');
+            //클라이언트로부터 메시지 수신
+            socket.on('recieveMessageFromClient', function (data) {
+                createMessage(false, data.msg);
             });
+
+            var chatDialog = $('#chatDialog');
+
+            //채팅창 메시지 전송
+            chatDialog.find('#sendBtn').on('click', function () {
+                socket.emit('sendMessageToClient', {
+                    client: $('#clientId').val(),
+                    msg: $('#chatInput').val()
+                }, function (msg) {
+                    createMessage(true, msg);
+                });
+            })
         });
     h1= title
     .idform
