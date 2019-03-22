@@ -56,15 +56,21 @@ block content
             p.addClass('border-radius10');
             p.html(data.name);
 
+            //해당 클라이언트와의 대화창 정의
             p.on('click', function () {
                 console.log($(this).attr('id'));
+                $('#chatDialog').dialog({ autoOpen: false, modal: true, height: 400, width: 500, title : 'Talk with " '+$(this).html() + ' "' });
+                $('#chatDialog').dialog('open');
             });
 
+            //이미 접속된 클라이언트인지 확인
             listedClient = connectClientListDiv.find('#'+data.socketId);
 
+            //접속되지않은 클라이언트면 리스트에 추가
             if(listedClient.length == 0){
                 connectClientListDiv.append(p);
             }else{
+                //이미 접속해있는 클라이언트면 이름만 업데이트
                 listedClient.html(p.html());
             }
 
@@ -90,3 +96,8 @@ block content
                 |  )
             p Click client in the list below to send a message.
             .connect-clients.border-radius10#connectClientList
+        #chatDialog.display-none
+            #chatArea.chat-area
+            input.chat-input(type='text')
+            button.chat-send send
+

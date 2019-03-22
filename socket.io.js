@@ -42,8 +42,11 @@ io.on('connection', function (socket) {
             admin.name = name;
             admin.role = role;
             admin.socketId = socketId;
-
+            
+            //관리자에게만 현재 사용자 리스트 알림이벤트를 전송
             io.to(admin.socketId).emit('notifyClientLoginListToAdmin', getClientList());
+            //관리자를 제외한 모든 클라이언트에게 관리자 로그인이벤트를 전송
+            socket.broadcast.emit('notifyAdministratorLogin');
 
             debug('save admin data : ');
             debug(admin);
@@ -67,7 +70,18 @@ io.on('connection', function (socket) {
     */
     socket.on('disconnect', function (cause) {
         debug('user disconnect. ID : '+ socket.conn.id +' cause : ' + cause);
-        io.to(admin.socketId).emit('notifyClientLogoutToAdmin', socket.conn.id);
+
+        //로그아웃한 클라이언트가 관리자일경우 관리자객체 비움
+        if(socket.role == 'administrator'){
+            //관리자를 제외한 모든 클라이언트에게 관리자 로그아웃 이벤트 전송
+            socket.broadcast.emit('notifyAdministratorLogout');
+            debug('administrator logged out.');
+            admin = {};
+        }else{
+            //관리자에게 클라이언트 로그아웃 알림이벤트 전송
+            io.to(admin.socketId).emit('notifyClientLogoutToAdmin', socket.conn.id);
+        }
+
     })
 
     /*********************
@@ -96,7 +110,7 @@ function getClientList (roomId, namespace){
         , ns = io.of(namespace || '/');
 
     var isAdministrator;
-
+    
     if (ns) {
         for(var id in ns.connected){
 

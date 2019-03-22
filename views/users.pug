@@ -20,6 +20,16 @@ block content
                     return false;
                 }
             });
+
+            //관리자 로그인 이벤트
+            socket.on('notifyAdministratorLogin', function (data) {
+                console.log('notifyAdministratorLogin');
+            });
+
+            //관리자 로그아웃 이벤트
+            socket.on('notifyAdministratorLogout', function (data) {
+                console.log('notifyAdministratorLogout');
+            });
         });
     h1= title
     .idform
