@@ -1,9 +1,3 @@
-function openChatDialog(socket) {
-    socket.on('openChatDialog', function (data) {
-        createChatDialog(data.client);
-    });
-}
-
 function createMessage(isMyMsg, msg) {
     var chatItem = $('<div></div>'),
         myMessage = $('<div></div>'),

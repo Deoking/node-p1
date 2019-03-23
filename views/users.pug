@@ -30,7 +30,9 @@ block content
             });
 
             //채팅창 오픈 이벤트
-            openChatDialog(socket);
+            socket.on('openChatDialog', function (data) {
+                createChatDialog(data.client);
+            });
 
             //클라이언트로부터 메시지 수신
             socket.on('recieveMessageFromClient', function (data) {
