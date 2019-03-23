@@ -16,11 +16,12 @@ function createMessage(isMyMsg, msg) {
     return chatArea;
 }
 
-function createChatDialog(targetId) {
+function createChatDialog(targetId, mode) {
     var chatDialog = $('#chatDialog'),
         chatArea = $('#chatArea');
 
     chatDialog.find('#clientId').val(targetId);
+    chatDialog.find('#chatMode').val(mode);
     if(!chatDialog.hasClass('ui-dialog-content')){
         chatDialog.dialog({
             autoOpen: false,

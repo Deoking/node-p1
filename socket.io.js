@@ -100,10 +100,16 @@ io.on('connection', function (socket) {
 
         console.log(data);
 
-        io.to(target).emit('openChatDialog', data);
-        
-        //메시지 전송 이벤트 실행
-        io.to(target).emit('recieveMessageFromClient', data);
+        if(data.mode == 'single'){
+            io.to(target).emit('openChatDialog', data);
+
+            //메시지 전송 이벤트 실행
+            io.to(target).emit('recieveMessageFromClient', data);
+        }else{
+            socket.broadcast.emit('openChatDialog', data);
+            socket.broadcast.emit('recieveMessageFromClient', data);
+        }
+
         fn(data.msg);
     });
 
