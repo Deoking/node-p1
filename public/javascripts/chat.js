@@ -16,11 +16,11 @@ function createMessage(isMyMsg, msg) {
     return chatArea;
 }
 
-function createChatDialog(targetId, mode) {
+function createChatDialog(el, mode) {
     var chatDialog = $('#chatDialog'),
         chatArea = $('#chatArea');
 
-    chatDialog.find('#clientId').val(targetId);
+    chatDialog.find('#clientSocketId').val(el.attr('socketId'));
     chatDialog.find('#chatMode').val(mode);
     if(!chatDialog.hasClass('ui-dialog-content')){
         chatDialog.dialog({
@@ -28,7 +28,7 @@ function createChatDialog(targetId, mode) {
             modal: true,
             height: 400,
             width: 500,
-            title: 'Talk with " Administrator "'
+            title: 'Talk with " '+ el.attr('name') +' "'
         });
     }
 

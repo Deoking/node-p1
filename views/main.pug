@@ -1,0 +1,130 @@
+extends layout
+
+block content
+    script.
+        $(document).ready(function () {
+            var socket = io.connect();
+
+            //접속시 사용자 아이디를 소켓에 저장
+            socket.userId = '#{user.id}';
+
+            //로그인이벤트 전송
+            socket.emit('login', {
+                name : '#{user.name}',
+                account : '#{user.account}',
+                id : '#{user.id}'
+            });
+
+            //접속중인 클라이언트 리스트 알림 이벤트
+            socket.on('notifyClientLoginList', function (data) {
+                for (var i = 0; i < data.length; i++) {
+
+                    if(socket.userId == data[i].id){
+                        data[i].isMe = true;
+                    }
+
+                    addClientToList(data[i]);
+                }
+                //updateConnectedClientCount();
+            });
+
+            //클라이언트접속 알림 이벤트
+            socket.on('notifyClientLogin', function (data) {
+                console.log('notifyClientLogin');
+                addClientToList(data);
+                //updateConnectedClientCount();
+            });
+
+            //접속해제 클라이언트 알림 이벤트
+            socket.on('notifyClientLogout', function (data) {
+                $('#' + data).remove();
+            });
+
+            var chatDialog = $('#chatDialog');
+
+            //채팅 전송 버튼 이벤트
+            chatDialog.find('#sendBtn').on('click', function () {
+                socket.emit('sendMessageToClient', {
+                    client: $('#clientSocketId').val(),
+                    msg: $('#chatInput').val(),
+                    mode: $('#chatMode').val()
+                }, function (msg) {
+                    createMessage(true, msg);
+                });
+            });
+
+            //로그아웃
+            $('#logout').on('click', function () {
+                var cfm = confirm('Are you sure to logout?');
+                if(cfm){
+                    location.href='/logout'
+                }else{
+                    return false;
+                }
+            });
+        });
+
+        //클라이언트를 접속리스트에 추가
+        function addClientToList(data) {
+            var connectClientListDiv = $('#clientList');
+            var listedClient;
+            var p = $('<p></p>');
+
+            p.attr('id', data.id);
+            p.attr('socketId', data.socketId);
+            p.attr('name', data.name);
+            p.addClass('connect-clients-item');
+            p.addClass('border-radius10');
+
+            if(data.isMe){
+                p.html(data.name + ' - me');
+            }else{
+                p.html(data.name);
+            }
+
+            //해당 클라이언트와의 대화창 정의
+            if(!data.isMe){
+                p.on('click', function () {
+                    createChatDialog($(this), 'single');
+                });
+            }
+
+            //이미 접속된 클라이언트인지 확인
+            listedClient = connectClientListDiv.find('#' + data.id);
+
+            //접속되지않은 클라이언트면 리스트에 추가
+            if (listedClient.length == 0) {
+                connectClientListDiv.append(p);
+            } else {
+                //이미 접속해있는 클라이언트면 이름만 업데이트
+                listedClient.html(p.html());
+            }
+
+        }
+    h1= title
+    button#logout Logout
+    #userinfo
+        input(type='hidden', value=user.id)
+        input(type='hidden', value=user.name)
+        input(type='hidden', value=user.account)
+    .main-container
+        #clientListContainer.main-client-list-container.border-radius10
+            .region-title.border-radius10
+                p Connected client list.
+                #clientList.item-list
+        #roomListContainer.main-room-list-container.border-radius10
+            .region-title.border-radius10
+                p List of rooms created.
+                #roomList.item-list
+                button#createRoom.create-room-btn Create room
+    #chatDialog.display-none
+        #chatArea.chat-area.border-radius10
+        input#chatInput.chat-input(type='text')
+        input#clientSocketId(type='hidden')
+        input#chatMode(type='hidden')
+        button#sendBtn.chat-send send
+
+
+
+
+

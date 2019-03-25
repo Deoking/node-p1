@@ -15,13 +15,6 @@ a {
     padding-left: 10px;
 }
 
-.connect-clients-item {
-    cursor: pointer;
-    height: 18px;
-    padding: 5px;
-
-}
-
 .connect-clients-item:hover {
     background-color: #ffffff;
 }
@@ -83,4 +76,52 @@ a {
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px;
+}
+
+/***********************************************/
+.main-container {
+    width : 100%;
+}
+.main-client-list-container{
+    width: 200px;
+    height: 500px;
+    background-color: #d6f7ff;
+    float: left;
+}
+.main-room-list-container{
+    width: 200px;
+    height: 500px;
+    background-color:#cefffd;
+    float: left;
+    margin-left: 10px;
+
+}
+.region-title{
+    background-color: rgba(146, 184, 230, 0.2);
+    width : 100%;
+    height:30px;
+    padding-top: 10px;
+    text-align: center;
+}
+.region-title > p {
+    margin : 0 5px;
+    font-weight: bold;
+}
+.item-list{
+    margin-top: 20px;
+    width: 100%;
+    overflow-y: scroll;
+    height : 420px;
+}
+
+.connect-clients-item {
+    cursor: pointer;
+    height: 18px;
+    padding: 5px;
+}
+.create-room-btn {
+    margin-top: 5px;
+}
+#logout{
+    margin : 10px 0px;
 }

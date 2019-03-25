@@ -28,16 +28,23 @@ io.on('connection', function (socket) {
 
 
         var socketId = socket.conn.id;
+        var account = data.account;
         var name = data.name;
-        var role = data.role;
+        var id = data.id;
 
-        debug('socketID : ' + socketId + ', name : ' + name + ', role : ' + role);
+        debug('socketID : ' + socketId + ', account : '+ account +', name : ' + name + ', id : ' + id);
         
         //로그인한 사용자의 데이터를 소켓에 저장
+        socket.account = account;
         socket.name = name;
-        socket.role = role;
+        socket.userId = id;
+        data.socketId = socketId;
+
+        socket.emit('notifyClientLoginList', getClientList());
+        socket.broadcast.emit('notifyClientLogin', data);
 
         //관리자일 경우 관리자 오브젝트에 정보 저장.
+        /*
         if('administrator' == role){
             admin.name = name;
             admin.role = role;
@@ -57,8 +64,9 @@ io.on('connection', function (socket) {
             //관리자에게 접속정보 전달
             io.to(admin.socketId).emit('notifyClientLoginToAdmin', data);
         }
+        */
     });
-    
+
     /**
      * disconnection 발생 이유(cause)들
      *
@@ -70,17 +78,17 @@ io.on('connection', function (socket) {
     */
     socket.on('disconnect', function (cause) {
         debug('user disconnect. ID : '+ socket.conn.id +' cause : ' + cause);
-
+        socket.broadcast.emit('notifyClientLogout', socket.userId);
         //로그아웃한 클라이언트가 관리자일경우 관리자객체 비움
-        if(socket.role == 'administrator'){
+       /* if(socket.role == 'administrator'){
             //관리자를 제외한 모든 클라이언트에게 관리자 로그아웃 이벤트 전송
             socket.broadcast.emit('notifyAdministratorLogout');
             debug('administrator logged out.');
             admin = {};
         }else{
             //관리자에게 클라이언트 로그아웃 알림이벤트 전송
-            io.to(admin.socketId).emit('notifyClientLogoutToAdmin', socket.conn.id);
-        }
+
+        }*/
 
     })
 
@@ -129,26 +137,18 @@ function getClientList (roomId, namespace){
         // 네임스페이스 기본값 = '/'
         , ns = io.of(namespace || '/');
 
-    var isAdministrator;
-    
     if (ns) {
         for(var id in ns.connected){
 
             var socket = ns.connected[id];
 
-            isAdministrator = socket.role == 'administrator';
-
             if(roomId) {
                 var index = socket.rooms.indexOf(roomId);
                 if(index !== -1) {
-                    if(!isAdministrator){
-                        res.push(createClientInfo(socket));
-                    }
-                }
-            } else {
-                if(!isAdministrator){
                     res.push(createClientInfo(socket));
                 }
+            } else {
+                res.push(createClientInfo(socket));
             }
         }
     }
@@ -158,8 +158,9 @@ function getClientList (roomId, namespace){
 //클라이언트 정보 생성
 function createClientInfo(socket) {
     var data = {};
-    data.name = socket.name || 'Anonymous';
-    data.role = socket.role || 'anonymous';
+    data.name = socket.name;
+    data.id = socket.userId;
+    data.account = socket.account;
     data.socketId = socket.id;
 
     return data;

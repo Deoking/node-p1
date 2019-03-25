@@ -4,9 +4,9 @@ block content
     script.
         $(document).ready(function () {
 
-            $('input[name=id]').focus();
+            $('input[name=account]').focus();
 
-            $('#join').on('click', function () {
+            $('#signup').on('click', function () {
 
                 //password 검증
                 var pw1 = $('input[name=password1]').val();
@@ -19,16 +19,20 @@ block content
                 }
                 return true;
             });
+            
+            $('#back').on('click', function () {
+                window.history.back();
+            });
         });
     h1= title
-    p Please enter your ID, name and password and click the "Join" button.
-    form(action='/join/add' method='post')#joinForm
+    p Please enter your account, name and password and click the "Sign up" button.
+    form(action='/signup' method='post')#joinForm
         table
             tr
                 td
-                    p ID
+                    p Account
                 td
-                    input(type='text' name='id' required='required')
+                    input(type='text' name='account' required='required')
             tr
                 td
                     p Name
@@ -45,6 +49,8 @@ block content
                 td
                     input(type='password' name='password2' required='required')
 
-        button#join Join
+        button#signup Sign up
+        |&nbsp;
+        button#back Back
 
 

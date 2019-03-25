@@ -1,0 +1,53 @@
+extends layout
+
+block content
+    script.
+        $(document).ready(function () {
+            $('#account').focus();
+
+            //회원가입
+            $('#signup').on('click', function () {
+                location.href = '/signup';
+            });
+            
+            //로그인
+            $('#signin').on('click', function () {
+                var account = $('#account').val();
+                var password = $('#password').val();
+
+                if(!account){
+                    alert('Please enter your account.');
+                    $('#account').focus();
+                    return false;
+                }
+                if(!password){
+                    alert('Please enter your password.');
+                    $('#password').focus();
+                    return false;
+                }
+
+                $('#loginForm').submit();
+            });
+        });
+    h1= title
+    p Welcome to the Node chat server.
+    p Please enter your Account and password and click the "Sign in" button.
+    form#loginForm(action='/signin' method='post')
+        table
+            tr
+                td
+                    p Account
+                td
+                    input#account(type='text' name='account' required='required')
+            tr
+                td
+                    p Password
+                td
+                    input#password(type='password' name='password' required='required')
+    p Click the "Sign up" button to create an account.
+    button#signup(value='signup') Sign up
+    |&nbsp;
+    button#signin(value='signin') Sign in
+
+
+

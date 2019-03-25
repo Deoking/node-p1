@@ -1,20 +1,20 @@
 var express = require('express');
 var router = express.Router();
 //서비스 모듈
-var joinService = require('./../services/join');
+var userService = require('../services/user');
 //debug 모듈
-var debug = require('debug')('node:join-router');
+var debug = require('debug')('node:signup-router');
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-    res.render('join', {title: 'Join'});
+router.route('/').get(function (req, res, next) {
+    res.render('signup', {title: 'Sign up'});
 });
 
 //회원가입
-router.post('/add', function (req, res, next) {
+router.route('/').post( function (req, res, next) {
     //res.render('join', {title: 'Join'});
     debug(req.body);
-    debug('/add -> call joinService.addUser');
+    debug('/add -> call userService.addUser');
 
     var params = req.body;
     // nodejs는 이벤트 기반 플랫폼으로 모든 요청 및 응답이 비동기로 이루어진다.
@@ -25,8 +25,8 @@ router.post('/add', function (req, res, next) {
         }else{
             res.redirect('/');
         }
-    }
-    joinService.addUser(params, callback);
+    };
+    userService.addUser(params, callback);
 });
 
 module.exports = router;

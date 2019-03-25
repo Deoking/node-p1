@@ -6,25 +6,29 @@ var express = require('express');
 //path모듈 -> 현재 파일 위치나 각종 path관련 함수모듈
 var path = require('path');
 
-//쿠키사용 모듈
+//쿠키모듈
 var cookieParser = require('cookie-parser');
-
+//세션모듈
+var expressSession = require('express-session');
 //logger 모듈
 var logger = require('morgan');
+//CORS 모듈
+var cors = require('cors');
 
 /**
  *  require 메서드 사용시 모듈의 경로를 적는다.
  *  이때 해당 경로에 파일이 존재하지 않을경우 파라미터로 들어온 경로를 디렉터리로 인식하고
  *  그 디렉터리 하위의 index.js를 가져온다.
  *
- *  ex ) 현재 폴더구조에서 (./routes/index.js)
+ *  ex ) 현재 폴더구조에서 (./routes/signin.js)
  *  var indexRouter = require('./routes/index'); 이 구문은
  *  var indexRouter = require('./routes/'); 와 동일하게 동작한다.
  */
-var indexRouter = require('./routes/index');
+var signRouter = require('./routes/signin');
 var adminRouter = require('./routes/admin');
 var usersRouter = require('./routes/users');
-var joinRouter = require('./routes/join');
+var signupRouter = require('./routes/signup');
+var mainRouter = require('./routes/main');
 
 var app = express();
 
@@ -39,13 +43,20 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
+app.use(expressSession({
+    secret : 'mykey',
+    resave : true,
+    saveUninitialized : true
+}));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
 
 //URL 매핑
-app.use('/', indexRouter);
+app.use('/', signRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
-app.use('/join', joinRouter);
+app.use('/signup', signupRouter);
+app.use('/main', mainRouter);
 
 // 404에러 핸들러
 app.use(function (req, res, next) {
