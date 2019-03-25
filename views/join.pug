@@ -1,0 +1,50 @@
+extends layout
+
+block content
+    script.
+        $(document).ready(function () {
+
+            $('input[name=id]').focus();
+
+            $('#join').on('click', function () {
+
+                //password 검증
+                var pw1 = $('input[name=password1]').val();
+                var pw2 = $('input[name=password2]').val();
+
+                if(pw1 != pw2){
+                    alert('Password does not match.');
+                    $('input[name=password2]').focus();
+                    return false;
+                }
+                return true;
+            });
+        });
+    h1= title
+    p Please enter your ID, name and password and click the "Join" button.
+    form(action='/join/add' method='post')#joinForm
+        table
+            tr
+                td
+                    p ID
+                td
+                    input(type='text' name='id' required='required')
+            tr
+                td
+                    p Name
+                td
+                    input(type='text' name='name' required='required')
+            tr
+                td
+                    p Password
+                td
+                    input(type='password' name='password1' required='required')
+            tr
+                td
+                    p Password verify
+                td
+                    input(type='password' name='password2' required='required')
+
+        button#join Join
+
+
