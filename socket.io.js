@@ -13,6 +13,7 @@ var admin={};
 /**
  * socket IO 이벤트 설정
  */
+
 //유저가 접속했을때
 io.on('connection', function (socket) {
 
