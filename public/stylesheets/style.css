@@ -7,6 +7,10 @@ a {
     color: #00B7FF;
 }
 
+p{
+    margin: 0px;
+}
+
 .connect-clients {
     height: 200px;
     width: 500px;
@@ -104,7 +108,7 @@ a {
     text-align: center;
 }
 .region-title > p {
-    margin : 0 5px;
+    /*margin : 0 5px;*/
     font-weight: bold;
 }
 .item-list{
@@ -115,10 +119,25 @@ a {
 }
 
 .connect-clients-item {
-    cursor: pointer;
-    height: 18px;
+    height: 20px;
     padding: 5px;
+    text-align: left;
 }
+
+.client-div {
+    width: 49%;
+    float: left;
+}
+
+.btn-div {
+    width: 49%;
+    text-align: right;
+    float: right;
+}
+.btn-div > img {
+    cursor: pointer;
+}
+
 .create-room-btn {
     margin-top: 5px;
 }

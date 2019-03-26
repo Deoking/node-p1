@@ -67,6 +67,48 @@ io.on('connection', function (socket) {
         */
     });
 
+    //room 이벤트
+    socket.on('room', function(data){
+        debug('room event data : ');
+        debug(data);
+
+        //방생성
+        if(data.cmd == 'create'){
+            //roomId에 해당하는 방이있는지 확인
+            if(io.sockets.adapter.rooms[data.roomId]){
+                debug('A room with that Id already exists.');
+            }else{
+                socket.join(data.roomId);
+
+                var curRoom = io.sockets.adapter.rooms[data.roomId];
+                curRoom.id = data.roomId;
+                curRoom.name = data.roomName;
+                curRoom.owner = data.roomOwner;
+                debug('The room creation completed.');
+            }
+        //방 수정
+        }else if(data.cmd == 'update'){
+            var curRoom = io.sockets.adapter.rooms[data.roomId];
+            curRoom.id = data.roomId;
+            curRoom.name = data.roomName;
+            curRoom.owner = data.roomOwner;
+            debug('The room has been modified.');
+        //방 제거
+        }else if(data.cmd == 'delete'){
+            socket.leave(data.roomId);
+
+            if(io.sockets.adapter.rooms[data.roomId]){
+                delete io.sockets.adapter.rooms[data.roomId];
+            }
+            debug('The room has been removed.');
+        }
+
+        var roomList = getRoomList();
+        var data = {'cmd' : 'list', rooms : roomList};
+
+        io.sockets.emit('room', data);
+    });
+
     /**
      * disconnection 발생 이유(cause)들
      *
@@ -78,7 +120,12 @@ io.on('connection', function (socket) {
     */
     socket.on('disconnect', function (cause) {
         debug('user disconnect. ID : '+ socket.conn.id +' cause : ' + cause);
-        socket.broadcast.emit('notifyClientLogout', socket.userId);
+        var data = {
+            socketId : socket.conn.id,
+            userId : socket.userId,
+            name : socket.name
+        };
+        socket.broadcast.emit('notifyClientLogout', data);
         //로그아웃한 클라이언트가 관리자일경우 관리자객체 비움
        /* if(socket.role == 'administrator'){
             //관리자를 제외한 모든 클라이언트에게 관리자 로그아웃 이벤트 전송
@@ -164,6 +211,35 @@ function createClientInfo(socket) {
     data.socketId = socket.id;
 
     return data;
+}
+
+function getRoomList() {
+    var roomList = [];
+
+    Object.keys(io.sockets.adapter.rooms).forEach(function (roomId) {
+        debug('current room id : ' + roomId );
+
+        var outRoom = io.sockets.adapter.rooms[roomId];
+
+        var foundDefault = false;
+        var index = 0;
+
+        Object.keys(outRoom.sockets).forEach(function (key) {
+            debug('#' + index + ' : ' + key + ', ' + outRoom.sockets[key]);
+
+            if(roomId == key){
+                foundDefault = true;
+                debug('this is default room.');
+            }
+            index++;
+        });
+
+        if(!foundDefault){
+            roomList.push(outRoom);
+        }
+    });
+
+    return roomList;
 }
 
 module.exports = io;

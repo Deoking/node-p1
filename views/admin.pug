@@ -45,6 +45,7 @@ block content
             //접속해제 클라이언트 알림 이벤트
             socket.on('notifyClientLogoutToAdmin', function (data) {
                 $('#' + data).remove();
+                console.log(data);
                 updateConnectedClientCount();
             });
 

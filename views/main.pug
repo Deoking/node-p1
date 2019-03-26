@@ -18,11 +18,7 @@ block content
             //접속중인 클라이언트 리스트 알림 이벤트
             socket.on('notifyClientLoginList', function (data) {
                 for (var i = 0; i < data.length; i++) {
-
-                    if(socket.userId == data[i].id){
-                        data[i].isMe = true;
-                    }
-
+                    data[i].isMe = socket.userId == data[i].id;
                     addClientToList(data[i]);
                 }
                 //updateConnectedClientCount();
@@ -30,14 +26,49 @@ block content
 
             //클라이언트접속 알림 이벤트
             socket.on('notifyClientLogin', function (data) {
-                console.log('notifyClientLogin');
+                console.log('111');
                 addClientToList(data);
                 //updateConnectedClientCount();
             });
 
             //접속해제 클라이언트 알림 이벤트
             socket.on('notifyClientLogout', function (data) {
-                $('#' + data).remove();
+                var chatDialog = $('#chatDialog');
+                if (chatDialog.hasClass('ui-dialog-content')) {
+                    if (chatDialog.dialog('isOpen')) {
+                        //현재 채팅중인 클라이언트라면
+                        if (chatDialog.find('#targetClientSocketId').val() == data.socketId) {
+                            alert('"' + data.name + '" has been disconnected.');
+                            //채팅창 종료
+                            chatDialog.dialog('close');
+                        }
+                    }
+                }
+                $('#client-' + data.userId).remove();
+            });
+            
+            //방리스트받기 이벤트
+            socket.on('room', function (data) {
+                if(data.cmd == 'list'){
+                    console.log(data.rooms);
+                    var rooms = data.rooms;
+
+                    for (var i=0; i<rooms.length; i++){
+                        addRoomToList(rooms[i]);
+                    }
+
+                }
+
+            });
+
+            //방만들기이벤트
+            $('#createRoom').on('click', function () {
+                var roomName = prompt("Please enter your room name", "");
+
+                if (roomName != null) {
+                    var data = {cmd : 'create', roomName : roomName, roomId : 'room-'+'#{user.id}', roomOwner : '#{user.name}'};
+                    socket.emit('room', data);
+                }
             });
 
             var chatDialog = $('#chatDialog');
@@ -45,12 +76,23 @@ block content
             //채팅 전송 버튼 이벤트
             chatDialog.find('#sendBtn').on('click', function () {
                 socket.emit('sendMessageToClient', {
-                    client: $('#clientSocketId').val(),
+                    client: $('#targetClientSocketId').val(),
                     msg: $('#chatInput').val(),
                     mode: $('#chatMode').val()
                 }, function (msg) {
                     createMessage(true, msg);
                 });
+            });
+
+            //채팅창 오픈 이벤트
+            socket.on('openChatDialog', function (data) {
+                var clientFormData = arrayToObject($('#' + data.sender).serializeArray());
+                createChatDialog(clientFormData, 'single');
+            });
+
+            //클라이언트로부터 메시지 수신
+            socket.on('recieveMessageFromClient', function (data) {
+                createMessage(false, data.msg);
             });
 
             //로그아웃
@@ -64,43 +106,6 @@ block content
             });
         });
 
-        //클라이언트를 접속리스트에 추가
-        function addClientToList(data) {
-            var connectClientListDiv = $('#clientList');
-            var listedClient;
-            var p = $('<p></p>');
-
-            p.attr('id', data.id);
-            p.attr('socketId', data.socketId);
-            p.attr('name', data.name);
-            p.addClass('connect-clients-item');
-            p.addClass('border-radius10');
-
-            if(data.isMe){
-                p.html(data.name + ' - me');
-            }else{
-                p.html(data.name);
-            }
-
-            //해당 클라이언트와의 대화창 정의
-            if(!data.isMe){
-                p.on('click', function () {
-                    createChatDialog($(this), 'single');
-                });
-            }
-
-            //이미 접속된 클라이언트인지 확인
-            listedClient = connectClientListDiv.find('#' + data.id);
-
-            //접속되지않은 클라이언트면 리스트에 추가
-            if (listedClient.length == 0) {
-                connectClientListDiv.append(p);
-            } else {
-                //이미 접속해있는 클라이언트면 이름만 업데이트
-                listedClient.html(p.html());
-            }
-
-        }
     h1= title
     button#logout Logout
     #userinfo
@@ -120,7 +125,7 @@ block content
     #chatDialog.display-none
         #chatArea.chat-area.border-radius10
         input#chatInput.chat-input(type='text')
-        input#clientSocketId(type='hidden')
+        input#targetClientSocketId(type='hidden')
         input#chatMode(type='hidden')
         button#sendBtn.chat-send send
 
