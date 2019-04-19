@@ -14,7 +14,7 @@ router.route('/').get(function (req, res, next) {
 router.route('/').post( function (req, res, next) {
     //res.render('join', {title: 'Join'});
     debug(req.body);
-    debug('/add -> call userService.addUser');
+    debug('call userService.addUser');
 
     var params = req.body;
     // nodejs는 이벤트 기반 플랫폼으로 모든 요청 및 응답이 비동기로 이루어진다.

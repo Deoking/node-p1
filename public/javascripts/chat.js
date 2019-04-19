@@ -50,7 +50,6 @@ function createClientInfoEl(data) {
     //클라이언트 데이터 폼 생성
     clientDataForm.attr('id', data.socketId);
     var keys = Object.keys(data);
-
     for (var i=0; i<keys.length; i++){
         var value = data[keys[i]];
         var clientData = $('<input>');
@@ -106,7 +105,10 @@ function createChatDialog(data, mode) {
 
     chatDialog.find('#targetClientSocketId').val(data.socketId);
     chatDialog.find('#chatMode').val(mode);
+    chatDialog.find('#targetClientName').val(data.name);
+    //다이얼로그(채팅창)가 적용되지 않았다면
     if(!chatDialog.hasClass('ui-dialog-content')){
+        //다이얼로그 적용
         chatDialog.dialog({
             autoOpen: false,
             modal: true,
@@ -114,7 +116,8 @@ function createChatDialog(data, mode) {
             width: 500
         });
     }
-
+    
+    //다이얼로그(채팅창)이 열려이지 않다면
     if (!chatDialog.dialog('isOpen')) {
         chatDialog.dialog('open');
         chatDialog.dialog('option', 'title', 'Talk with " '+ data.name +' "');
@@ -147,16 +150,9 @@ function addClientToList(data) {
     if (listedClient.length == 0) {
         connectClientListDiv.append(clientItem);
     } else {
-        listedClient.remove();
+        //listedClient.remove();
         connectClientListDiv.append(clientItem);
     }
-}
-
-//방 리스트에 방에 추가
-function addRoomToList(data) {
-    var roomListDiv = $('#roomList');
-    var roomItem = createRoomInfoEl(data);
-    roomListDiv.append(roomItem);
 }
 
 function arrayToObject(array) {
@@ -165,6 +161,5 @@ function arrayToObject(array) {
     for (var i = 0; i < array.length; i++) {
         object[array[i].name] = array[i].value;
     }
-
     return object;
 }

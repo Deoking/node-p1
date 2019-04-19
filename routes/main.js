@@ -7,7 +7,7 @@ router.route('/').get(function(req, res, next) {
         res.redirect('/');
     }else{
         var user = req.session.user;
-
+        //메인페이지로 이동, 'user' 란 이름으로 로그인정보 전달
         res.render('main', { title: 'Main chat lobby', user : user });
     }
 });

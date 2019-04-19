@@ -2,18 +2,18 @@ var connPool = require('./../database/connection');
 //debug 모듈
 var debug = require('debug')('node:user-service');
 
-var joinService = {
+var userService = {
     
     //사용자 추가
     addUser : function (params, callback) {
         connPool.getConnection(function (err, conn) {
             if(err){
                 if(conn){
+                    //커낵션을 풀에 반환
                     conn.release();
                 }
                 callback(err, null);
                 return false;
-
             }
             debug('Database connection thread ID : ' + conn.threadId);
 
@@ -28,9 +28,9 @@ var joinService = {
                     callback(err, null);
                     return result;
                 }
-                callback(null, result);
-                result = true;
 
+                result = true;
+                callback(null, result);
                 debug('addUser result : ' + result);
 
                 return result;
@@ -83,6 +83,6 @@ var joinService = {
             });
         });
     }
-}
+};
 
-module.exports = joinService;
+module.exports = userService;

@@ -24,8 +24,7 @@ var cors = require('cors');
  *  var indexRouter = require('./routes/index'); 이 구문은
  *  var indexRouter = require('./routes/'); 와 동일하게 동작한다.
  */
-var signRouter = require('./routes/signin');
-var adminRouter = require('./routes/admin');
+var signinRouter = require('./routes/signin');
 var usersRouter = require('./routes/users');
 var signupRouter = require('./routes/signup');
 var mainRouter = require('./routes/main');
@@ -45,16 +44,15 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(expressSession({
     secret : 'mykey',
-    resave : true,
-    saveUninitialized : true
+    resave : false,
+    saveUninitialized : false
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 //URL 매핑
-app.use('/', signRouter);
+app.use('/', signinRouter);
 app.use('/users', usersRouter);
-app.use('/admin', adminRouter);
 app.use('/signup', signupRouter);
 app.use('/main', mainRouter);
 

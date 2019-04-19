@@ -60,23 +60,13 @@ block content
                 }
 
             });
-
-            //방만들기이벤트
-            $('#createRoom').on('click', function () {
-                var roomName = prompt("Please enter your room name", "");
-
-                if (roomName != null) {
-                    var data = {cmd : 'create', roomName : roomName, roomId : 'room-'+'#{user.id}', roomOwner : '#{user.name}'};
-                    socket.emit('room', data);
-                }
-            });
-
             var chatDialog = $('#chatDialog');
 
             //채팅 전송 버튼 이벤트
             chatDialog.find('#sendBtn').on('click', function () {
                 socket.emit('sendMessageToClient', {
                     client: $('#targetClientSocketId').val(),
+                    clientName : $('#targetClientName').val(),
                     msg: $('#chatInput').val(),
                     mode: $('#chatMode').val()
                 }, function (msg) {
@@ -117,15 +107,11 @@ block content
             .region-title.border-radius10
                 p Connected client list.
                 #clientList.item-list
-        #roomListContainer.main-room-list-container.border-radius10
-            .region-title.border-radius10
-                p List of rooms created.
-                #roomList.item-list
-                button#createRoom.create-room-btn Create room
     #chatDialog.display-none
         #chatArea.chat-area.border-radius10
         input#chatInput.chat-input(type='text')
         input#targetClientSocketId(type='hidden')
+        input#targetClientName(type='hidden')
         input#chatMode(type='hidden')
         button#sendBtn.chat-send send
 

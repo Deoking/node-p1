@@ -44,70 +44,6 @@ io.on('connection', function (socket) {
         socket.emit('notifyClientLoginList', getClientList());
         socket.broadcast.emit('notifyClientLogin', data);
 
-        //관리자일 경우 관리자 오브젝트에 정보 저장.
-        /*
-        if('administrator' == role){
-            admin.name = name;
-            admin.role = role;
-            admin.socketId = socketId;
-            
-            //관리자에게만 현재 사용자 리스트 알림이벤트를 전송
-            io.to(admin.socketId).emit('notifyClientLoginListToAdmin', getClientList());
-            //관리자를 제외한 모든 클라이언트에게 관리자 로그인이벤트를 전송
-            socket.broadcast.emit('notifyAdministratorLogin');
-
-            debug('save admin data : ');
-            debug(admin);
-        }else{
-            //관리자가 아닐경우
-            //접속자의 socketId를 세팅
-            data.socketId = socketId;
-            //관리자에게 접속정보 전달
-            io.to(admin.socketId).emit('notifyClientLoginToAdmin', data);
-        }
-        */
-    });
-
-    //room 이벤트
-    socket.on('room', function(data){
-        debug('room event data : ');
-        debug(data);
-
-        //방생성
-        if(data.cmd == 'create'){
-            //roomId에 해당하는 방이있는지 확인
-            if(io.sockets.adapter.rooms[data.roomId]){
-                debug('A room with that Id already exists.');
-            }else{
-                socket.join(data.roomId);
-
-                var curRoom = io.sockets.adapter.rooms[data.roomId];
-                curRoom.id = data.roomId;
-                curRoom.name = data.roomName;
-                curRoom.owner = data.roomOwner;
-                debug('The room creation completed.');
-            }
-        //방 수정
-        }else if(data.cmd == 'update'){
-            var curRoom = io.sockets.adapter.rooms[data.roomId];
-            curRoom.id = data.roomId;
-            curRoom.name = data.roomName;
-            curRoom.owner = data.roomOwner;
-            debug('The room has been modified.');
-        //방 제거
-        }else if(data.cmd == 'delete'){
-            socket.leave(data.roomId);
-
-            if(io.sockets.adapter.rooms[data.roomId]){
-                delete io.sockets.adapter.rooms[data.roomId];
-            }
-            debug('The room has been removed.');
-        }
-
-        var roomList = getRoomList();
-        var data = {'cmd' : 'list', rooms : roomList};
-
-        io.sockets.emit('room', data);
     });
 
     /**
@@ -138,11 +74,7 @@ io.on('connection', function (socket) {
 
         }*/
 
-    })
-
-    /*********************
-     ** 관리자이벤트 정의 **
-     ********************/
+    });
 
     //사용자 -> 사용자(단일) 메시지
     socket.on('sendMessageToClient', function (data, fn) {
@@ -167,11 +99,6 @@ io.on('connection', function (socket) {
         }
 
         fn(data.msg);
-    });
-
-    //관리자 -> 사용자(전체) 메시지
-    socket.on('messageToUsers', function (data) {
-
     });
 
     /*********************
@@ -212,35 +139,6 @@ function createClientInfo(socket) {
     data.socketId = socket.id;
 
     return data;
-}
-
-function getRoomList() {
-    var roomList = [];
-
-    Object.keys(io.sockets.adapter.rooms).forEach(function (roomId) {
-        debug('current room id : ' + roomId );
-
-        var outRoom = io.sockets.adapter.rooms[roomId];
-
-        var foundDefault = false;
-        var index = 0;
-
-        Object.keys(outRoom.sockets).forEach(function (key) {
-            debug('#' + index + ' : ' + key + ', ' + outRoom.sockets[key]);
-
-            if(roomId == key){
-                foundDefault = true;
-                debug('this is default room.');
-            }
-            index++;
-        });
-
-        if(!foundDefault){
-            roomList.push(outRoom);
-        }
-    });
-
-    return roomList;
 }
 
 module.exports = io;

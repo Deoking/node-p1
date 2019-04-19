@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 var config = require('./config');
 
-var getConnection = function(){
+var getConnectionPool = function() {
     var pool = mysql.createPool({
         connectionLimit : 10,
         host : config.host,
@@ -11,6 +11,6 @@ var getConnection = function(){
         debug : false
     });
     return pool;
-}
+};
 
-module.exports = getConnection();
+module.exports = getConnectionPool();
